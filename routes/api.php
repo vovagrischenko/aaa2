@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ApiController;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,12 +14,7 @@ use App\Http\Controllers\ApiController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::get('{model}',[ApiController::class, 'index']);
-Route::post('{model}',[ApiController::class, 'add']);
-Route::get('{model}/{id}',[ApiController::class, 'get']);
-Route::put('{model}/{id}',[ApiController::class, 'update']);
-Route::delete('{model}/{id}',[ApiController::class, 'delete']);
+Route::resource('users', 'App\Http\Controllers\UserController');
+Route::resource('videos', 'App\Http\Controllers\VideoController');
+Route::resource('articles', 'App\Http\Controllers\ArticleController');
+Route::resource('comments', 'App\Http\Controllers\CommentController');
