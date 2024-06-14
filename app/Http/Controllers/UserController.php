@@ -16,7 +16,10 @@ class UserController extends Controller
         $limit = $request->get('limit');
         $page = $request->get('page');
         if ($limit) {
-            $items = $items->chunk($page??1);
+            $items = $items->chunk($limit);
+            if ($page){
+                $items = $items[$page-1] ?? $items[0];
+            }
         }
         return response()->json($items);
 
@@ -27,10 +30,10 @@ class UserController extends Controller
      */
     public function store(Request $request) : JsonResponse
     {
-        if ($Validation_errors = User::validate($request)) {
-            $response = $Validation_errors;
+        if ($validation_errors = User::validate($request)) {
+            $response = $validation_errors;
         } elseif (count((User::query()->select()->where('email',$request->post('email'))->get()))) {
-            $response = 'item already exists!';
+            $response = 'user already exists!';
         } else {
             User::create($request->post());
             $response = 'ok';
@@ -56,8 +59,8 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id) : JsonResponse
     {
-        if ($Validation_errors = User::validate($request)) {
-            $response = $Validation_errors;
+        if ($validation_errors = User::validate($request)) {
+            $response = $validation_errors;
         } else if ($item = User::find($id)) {
             $item->update($request->post());
             $response = 'ok';
@@ -76,7 +79,7 @@ class UserController extends Controller
             $item->delete($id);
             $response = 'ok';
         } else {
-            $response = ['response' => 'missed item'];
+            $response = 'missed item';
         }
         return response()->json(['response' => $response]);
     }

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Video;
+use function Laravel\Prompts\select;
+
 class VideoController extends Controller
 {
     /**
@@ -49,13 +52,13 @@ class VideoController extends Controller
      */
     public function update(Request $request, string $id) : JsonResponse
     {
-        if ($Validation_errors = Video::validate($request)) {
-            $response = $Validation_errors;
+        if ($validation_errors = Video::validate($request)) {
+            $response = $validation_errors;
         } else if ($video = Video::find($id)) {
             $video->update($request->post());
             $response = 'ok';
         } else {
-            $response = ['response' => 'missed item'];
+            $response =  'missed item';
         }
         return response()->json(['response' => $response]);
     }
@@ -66,10 +69,11 @@ class VideoController extends Controller
     public function destroy(string $id) : JsonResponse
     {
         if ($video = Video::find($id)) {
+            Comment::query()->select()->where('target_model', 'videos')->where('target_id', $id)->delete();
             $video->delete($id);
             $response = 'ok';
         } else {
-            $response = ['response' => 'missed item'];
+            $response = 'missed item';
         }
         return response()->json(['response' => $response]);
     }

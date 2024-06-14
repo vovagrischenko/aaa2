@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Models\Comment;
 class ArticleController extends Controller
 {
     /**
@@ -22,8 +23,8 @@ class ArticleController extends Controller
      */
     public function store(Request $request) : JsonResponse
     {
-        if ($Validation_errors = Article::validate($request)) {
-            $response = $Validation_errors;
+        if ($validation_errors = Article::validate($request)) {
+            $response = $validation_errors;
         } else {
             Article::create($request->post());
             $response = 'ok';
@@ -49,13 +50,13 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id) : JsonResponse
     {
-        if ($Validation_errors = Article::validate($request)) {
-            $response = $Validation_errors;
+        if ($validation_errors = Article::validate($request)) {
+            $response = $validation_errors;
         } else if ($article = Article::find($id)) {
             $article->update($request->post());
             $response = 'ok';
         } else {
-            $response = ['response' => 'missed item'];
+            $response = 'missed item';
         }
         return response()->json(['response' => $response]);
     }
@@ -66,10 +67,11 @@ class ArticleController extends Controller
     public function destroy(string $id) : JsonResponse
     {
         if ($article = Article::find($id)) {
+            Comment::query()->select()->where('target_model', 'articles')->where('target_id', $id)->delete();
             $article->delete($id);
             $response = 'ok';
         } else {
-            $response = ['response' => 'missed item'];
+            $response = 'missed item';
         }
         return response()->json(['response' => $response]);
     }

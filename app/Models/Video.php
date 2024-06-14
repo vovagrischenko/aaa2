@@ -12,7 +12,8 @@ class Video extends Model
     protected $table = 'videos';
     protected $guarded = [];
 
-    static public function validate($request){
+    static public function validate($request) : string
+    {
         $data = $request->post();
         if (!count(User::query()->select()->where('id', $request->post('user_id'))->get())) {
             return 'invalid user_id';
@@ -20,8 +21,8 @@ class Video extends Model
         if (!(array_key_exists('name', $data))) {
             return 'invalid name';
         }
-        if (!(array_key_exists('url', $data))) {
-            return 'invalid name';
+        if (!(array_key_exists('url', $data) && filter_var($data['url'], FILTER_VALIDATE_URL))) {
+            return 'invalid url';
         }
         return '';
     }

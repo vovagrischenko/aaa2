@@ -14,29 +14,30 @@ class Comment extends Model
     protected $table = 'comments';
     protected $guarded = [];
 
-    static public function validate($request){
-        $result = '';
+    static public function validate($request) : string
+    {
+        $result = 'invalid target model';
         $data = $request->post();
         if (!count(User::query()->select()->where('id', $request->post('user_id'))->get())) {
             $result = 'invalid user_id';
         }
-        if (!(array_key_exists('comment', $data)) || strlen($data['comment']) > 255 ) {
+        if (!(array_key_exists('comment', $data)) && strlen($data['comment']) > 255 ) {
             $result = 'invalid comment';
         }
-        if (!array_key_exists('target_model', $data)) {
+        if (array_key_exists('target_model', $data)) {
             switch (($data['target_model'])){
-                case'Article':
-                    if (count(Article::find($data['target_model']??0))) {
+                case'articles':
+                    $result = '';
+                    if (!Article::find($data['target_id'])) {
                         $result = 'cannot find article';
                     }
                     break;
-                case 'Video':
-                    if (count(Video::find($data['target_model']??0))) {
-                        $result = 'cannot find article';
+                case 'videos':
+                    $result = '';
+                    if (!Article::find($data['target_id'])) {
+                        $result = 'cannot find video';
                     }
                     break;
-                default:
-                    $result = 'invalid target model';
             }
         }
         return $result;

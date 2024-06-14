@@ -22,8 +22,8 @@ class CommentController extends Controller
      */
     public function store(Request $request) : JsonResponse
     {
-        if ($Validation_errors = Comment::validate($request)) {
-            $response = $Validation_errors;
+        if ($validation_errors = Comment::validate($request)) {
+            $response = $validation_errors;
         } else {
             Comment::create($request->post());
             $response = 'ok';

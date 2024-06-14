@@ -12,16 +12,17 @@ class Article extends Model
     protected $table = 'articles';
     protected $guarded = [];
 
-    static public function validate($request){
+    static public function validate($request) : string
+    {
         $data = $request->post();
         if (!count(User::query()->select()->where('id', $request->post('user_id'))->get())) {
             return 'invalid user_id';
         }
         if (!(array_key_exists('name', $data))) {
-            return 'invalid name';
+            return 'missed name';
         }
         if (!(array_key_exists('article', $data))) {
-            return 'invalid article';
+            return 'missed article';
         }
         return '';
     }
